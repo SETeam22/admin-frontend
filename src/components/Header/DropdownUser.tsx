@@ -10,6 +10,9 @@ const DropdownUser = () => {
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
 
+  const userName = localStorage.getItem('userName');
+  const userRole = localStorage.getItem('userRole');
+
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -39,7 +42,7 @@ const DropdownUser = () => {
   const navigate = useNavigate(); 
 
   const handleLogout = (e) => {
-    navigate('/auth/admin');
+    navigate('/auth/signin');
   };
 
   return (
@@ -52,9 +55,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userName}
           </span>
-          <span className="block text-xs">Delivery Manager</span>
+          <span className="block text-xs">{userRole}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -136,7 +139,7 @@ const DropdownUser = () => {
           </li>
           <li>
             <Link
-              to="/pages/settings"
+              to="/settings"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg

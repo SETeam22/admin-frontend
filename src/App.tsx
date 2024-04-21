@@ -5,9 +5,11 @@ import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
-import AdminLogin from './pages/Authentication/AdminLogin';
+//import AdminLogin from './pages/Authentication/AdminLogin';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
+import AddService from './pages/Deliveries/AddService';
+import MyDeliveries from './pages/Deliveries/MyDeliveries';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
@@ -78,6 +80,24 @@ function App() {
             <>
               <PageTitle title="Orders | Admin" />
               <Orders />
+            </>
+          }
+        />
+        <Route
+          path="/deliveries/addservice"
+          element={
+            <>
+              <PageTitle title="Deliveries | Admin" />
+              <AddService />
+            </>
+          }
+        />
+        <Route
+          path="/deliveries/mydeliveries"
+          element={
+            <>
+              <PageTitle title="Deliveries | Admin" />
+              <MyDeliveries />
             </>
           }
         />
@@ -162,7 +182,7 @@ function App() {
             </>
           }
         />
-        <Route
+        {/* <Route
           path="/auth/admin"
           element={
             <>
@@ -170,7 +190,7 @@ function App() {
               <AdminLogin />
             </>
           }
-        />
+        /> */}
       </Routes>
     </>
   );

@@ -1,16 +1,90 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
+//import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 // import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.png';
-import DefaultLayout from '../../layout/DefaultLayout';
+import { useNavigate } from 'react-router-dom';
+//import DefaultLayout from '../../layout/DefaultLayout';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const SignIn: React.FC = () => {
-  return (
-    <DefaultLayout>
-      <Breadcrumb pageName="Sign In" />
 
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [captchaValue, setCaptchaValue] = useState(null);
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleCaptchaChange = (value) => {
+    console.log("Captcha value:", value);
+    setCaptchaValue(value); // Add this line
+  };
+
+  const navigate = useNavigate(); 
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!captchaValue) {
+      setAlert({ type: 'error', message: 'Please verify you are not a robot' });
+      return;
+    }
+
+    // Predefined credentials
+    const credentials = {
+      admin: { 
+        email: 'admin@gmail.com', 
+        password: 'root',
+        name: 'Michael Jordan',
+        role: 'Admin'
+      },
+      deliveryManager: { 
+        email: 'deliverymanager@gmail.com', 
+        password: 'test',
+        name: 'Larry Bird',
+        role: 'Delivery Manager'
+      },
+      driver: { 
+        email: 'driver@gmail.com', 
+        password: 'driver',
+        name: 'Tony Parker',
+        role: 'Driver'
+      },
+    };
+    
+    if (email === credentials.admin.email && password === credentials.admin.password) {
+      localStorage.setItem('userRole', credentials.admin.role); 
+      localStorage.setItem('userName', credentials.admin.name); 
+      console.log('Admin logged in successfully');
+      navigate('/');
+    } else if (email === credentials.deliveryManager.email && password === credentials.deliveryManager.password) {
+      localStorage.setItem('userRole', credentials.deliveryManager.role); 
+      localStorage.setItem('userName', credentials.deliveryManager.name); 
+      console.log('Delivery Manager logged in successfully');
+      navigate('/');
+    } else if (email === credentials.driver.email && password === credentials.driver.password) {
+      localStorage.setItem('userRole', credentials.driver.role); 
+      localStorage.setItem('userName', credentials.driver.name); 
+      console.log('Driver logged in successfully');
+      navigate('/');
+    } else {
+      setAlert({ type: 'error', message: 'Invalid credentials. Please try again' });
+    }
+  };
+
+   const [alert, setAlert] = useState(null);
+
+  return (
+    // <DefaultLayout>
+    //   <Breadcrumb pageName="Sign In" />
+    <section className="bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="flex-shrink-0 flex-grow-0 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
@@ -20,8 +94,7 @@ const SignIn: React.FC = () => {
               </Link>
 
               <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
+                Log in to your admin portal
               </p>
 
               <span className="mt-15 inline-block">
@@ -151,12 +224,29 @@ const SignIn: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              <span className="mb-1.5 block font-medium">Admin Dashboard</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to TailAdmin
+                Sign In
               </h2>
 
-              <form>
+              {alert && (
+                <div className="w-full border border-red-500 bg-red-100 text-red-900 px-4 py-3 mb-4 rounded relative" role="alert">
+                  <strong className="font-bold">{alert.type === 'error' ? 'Error' : 'Success'}:</strong>
+                  <span className="block sm:inline"> {alert.message}</span>
+                  <span className="absolute top-0 bottom-0 right-0 px-4 py-3" onClick={() => setAlert(null)}>
+                    <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <title>Close</title>
+                      <path
+                        fillRule="evenodd"
+                        d="M14.35 5.65a.5.5 0 00-.707 0L10 9.293 6.354 5.646a.5.5 0 00-.707.707L9.293 10l-3.647 3.646a.5.5 0 10.707.707L10 10.707l3.646 3.647a.5.5 0 00.707-.707L10.707 10l3.647-3.646a.5.5 0 000-.707z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
@@ -166,6 +256,8 @@ const SignIn: React.FC = () => {
                       type="email"
                       placeholder="Enter your email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      value={email} 
+                      onChange={handleEmailChange} 
                     />
 
                     <span className="absolute right-4 top-4">
@@ -190,13 +282,15 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Password
                   </label>
                   <div className="relative">
                     <input
                       type="password"
                       placeholder="6+ Characters, 1 Capital letter"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      value={password}
+                      onChange={handlePasswordChange}
                     />
 
                     <span className="absolute right-4 top-4">
@@ -222,6 +316,12 @@ const SignIn: React.FC = () => {
                     </span>
                   </div>
                 </div>
+                <div className="mb-5" >
+                  <ReCAPTCHA
+                    sitekey="6LfPz68pAAAAANLP2PNC_3J5fU4H9sFtw5j0LYoE"
+                    onChange={handleCaptchaChange}
+                  />
+                </div>
 
                 <div className="mb-5">
                   <input
@@ -231,7 +331,8 @@ const SignIn: React.FC = () => {
                   />
                 </div>
 
-                <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+
+                {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
                     <svg
                       width="20"
@@ -267,21 +368,22 @@ const SignIn: React.FC = () => {
                   </span>
                   Sign in with Google
                 </button>
-
-                <div className="mt-6 text-center">
+ */}
+                {/* <div className="mt-6 text-center">
                   <p>
                     Don’t have any account?{' '}
                     <Link to="/auth/signup" className="text-primary">
                       Sign Up
                     </Link>
                   </p>
-                </div>
+                </div> */}
               </form>
             </div>
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </section>
+    // </DefaultLayout>
   );
 };
 
